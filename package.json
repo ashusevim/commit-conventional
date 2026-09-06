@@ -1,15 +1,32 @@
 {
     "name": "commit-conventional",
-    "version": "1.0.1",
-    "description": "A CLI tool for authoring Git commits that follow the Conventional Commits specification.",
+    "version": "1.1.0",
+    "description": "An interactive CLI for creating Conventional Commits with Git.",
+    "type": "commonjs",
     "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "require": "./dist/index.js",
+            "default": "./dist/index.js"
+        }
+    },
     "bin": {
         "commit-conventional": "dist/index.js"
     },
+    "files": [
+        "dist",
+        "LICENSE",
+        "README.md"
+    ],
     "scripts": {
-        "build": "tsc",
+        "build": "tsc --pretty",
+        "clean": "tsc --build --clean",
+        "prepack": "npm run build",
+        "prepublishOnly": "npm test",
         "start": "node dist/index.js",
-        "test": "node dist/index.js --help"
+        "test": "npm run build && node --test"
     },
     "keywords": [
         "git",
@@ -19,6 +36,9 @@
     ],
     "author": "wanony",
     "license": "ISC",
+    "engines": {
+        "node": ">=18"
+    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/codingashishdev/conventional-committer.git"

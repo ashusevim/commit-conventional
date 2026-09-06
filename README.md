@@ -1,115 +1,127 @@
 # commit-conventional
 
-[![NPM version](https://img.shields.io/npm/v/commit-conventional.svg)](https://www.npmjs.com/package/commit-conventional)
+[![npm version](https://img.shields.io/npm/v/commit-conventional.svg)](https://www.npmjs.com/package/commit-conventional)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://www.conventionalcommits.org/)
 [![License](https://img.shields.io/npm/l/commit-conventional.svg)](https://github.com/codingashishdev/conventional-committer/blob/main/LICENSE)
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
-A CLI tool for authoring Git commits that follow the [Conventional Commits](https://www.conventionalcommits.org/) specification.
+An interactive CLI for creating [Conventional Commits](https://www.conventionalcommits.org/) with Git.
 
-## Features
+## Requirements
 
-- 🎯 **Interactive prompts** - Guided commit message creation
-- 📋 **Conventional Commits compliance** - Follows the standard specification
-- ✅ **Validation** - Ensures proper commit message format and length
-- 🔍 **Staged changes detection** - Warns when no changes are staged
-- 💥 **Breaking changes support** - Marks breaking changes with `!`
-- 📝 **Optional detailed body** - Add comprehensive commit descriptions
+- Node.js 18 or newer
+- Git
+- An interactive terminal
 
 ## Installation
 
-### Global Installation
-```bash
-npm install -g commit-conventional
+Run it without installing globally:
+
+```sh
+npx commit-conventional
 ```
 
-### Local Installation
-```bash
+Or install it in a project or globally:
+
+```sh
 npm install --save-dev commit-conventional
+npm install --global commit-conventional
 ```
 
 ## Usage
 
-1. Stage your changes with `git add`
-2. Run the tool:
-   ```bash
-   npx commit-conventional
-   # or if installed globally
-   commit-conventional
-   ```
-3. Follow the interactive prompts:
-   - **Type**: Select from conventional commit types (feat, fix, docs, etc.)
-   - **Scope**: Optional scope (e.g., auth, api, ui)
-   - **Subject**: Short description (max 72 characters)
-   - **Body**: Optional detailed description
-   - **Breaking**: Mark if this is a breaking change
-   - **Confirm**: Review and confirm the commit
+Stage changes, then start the prompt:
 
-## Showcase
-
-```
-$ npx commit-conventional
-? Type (build, chore, ci, docs, feat, fix, perf, refactor, style, test)
-? Scope (optional) › auth
-? Short description (subject) › add user authentication system
-? Added detailed body? (y/N)
-? Breaking change? (y/N)
-? Create commit with above information? (Y/n)
-
-feat(auth): add user authentication system
+```sh
+git add .
+npx commit-conventional
 ```
 
-## Commit Types
+The CLI checks that it is running in a Git repository, validates the commit type, scope, subject, body, and breaking-change description, then displays the complete message before asking for confirmation.
 
-The tool supports all standard conventional commit types:
+It never stages files automatically. Review the staged index with `git diff --cached` before confirming a commit.
 
-- `build` - Changes that affect the build system or external dependencies
-- `chore` - Other changes that don't modify src or test files
-- `ci` - Changes to CI configuration files and scripts
-- `docs` - Documentation only changes
-- `feat` - A new feature
-- `fix` - A bug fix
-- `perf` - A code change that improves performance
-- `refactor` - A code change that neither fixes a bug nor adds a feature
-- `style` - Changes that do not affect the meaning of the code
-- `test` - Adding missing tests or correcting existing tests
+### Options
 
-## Example Output
-
+```text
+-h, --help       Show help.
+-v, --version    Show the installed version.
+    --dry-run    Print the generated message without creating a commit.
+-n, --no-verify  Bypass Git hooks for this commit.
 ```
-feat(auth): add user authentication system
 
-Implemented JWT-based authentication with login/logout functionality.
-Added middleware for protected routes and token validation.
+`--dry-run` is useful for reviewing the generated message. Git hooks run by default; use `--no-verify` only when intentionally bypassing them.
 
-BREAKING CHANGE: Updated user schema, requires database migration.
+The command must run from an interactive terminal. Use `--help` or `--version` in scripts and CI; commit creation is intentionally interactive.
+
+## Commit format
+
+The generated message follows this shape:
+
+```text
+<type>(<optional scope>)<optional !>: <subject>
+
+<optional body>
+
+<optional BREAKING CHANGE footer>
+```
+
+Supported types are `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, and `test`.
+
+- `build` — changes to the build system or dependencies
+- `chore` — maintenance work that does not change application behavior
+- `ci` — continuous-integration configuration
+- `docs` — documentation-only changes
+- `feat` — a new feature
+- `fix` — a bug fix
+- `perf` — a performance improvement
+- `refactor` — code restructuring without behavior changes
+- `revert` — reverting an earlier commit
+- `style` — formatting or style-only changes
+- `test` — adding or updating tests
+
+## Programmatic API
+
+The package entry point also exposes the message builder for integrations:
+
+```js
+const { buildCommitMessage } = require("commit-conventional");
+
+const message = buildCommitMessage({
+  type: "fix",
+  scope: "api",
+  subject: "handle expired sessions",
+});
 ```
 
 ## Development
 
-### Build
-```bash
-npm run build
+```sh
+npm ci
+npm test
+npm pack --dry-run
 ```
 
-### Run locally
-```bash
-npm run start
+`npm test` performs a strict TypeScript build and runs the Node.js test suite. The `prepack` lifecycle builds the CLI before npm creates a tarball, while `prepublishOnly` runs the full test gate. The package publishes only the compiled CLI, declarations, source map, README, and license.
+
+## Publishing
+
+The package name is unscoped and already belongs to an npm account. To publish a new version, authenticate as the package owner or as a collaborator with publish access:
+
+```sh
+npm login --registry=https://registry.npmjs.org/
+npm whoami
+npm publish --access public
 ```
 
-## Requirements
+If `npm publish` returns `E404` for the registry `PUT` request, npm is usually hiding an authentication or permission failure. Confirm that `npm whoami` is the expected account and ask the current owner to grant access before retrying:
 
-- Node.js >= 14
-- Git repository
-- TypeScript (for development)
+```sh
+npm owner ls commit-conventional
+npm owner add YOUR_NPM_USERNAME commit-conventional
+```
+
+Do not publish credentials or auth tokens in the repository. The local tarball can be inspected safely with `npm pack --dry-run` before publishing.
 
 ## License
 
 ISC
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Use this tool to create conventional commits!
-5. Submit a pull request
