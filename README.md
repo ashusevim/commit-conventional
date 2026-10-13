@@ -1,26 +1,52 @@
-# commit-conventional
+# Commit Conventional
 
 [![npm version](https://img.shields.io/npm/v/commit-conventional.svg)](https://www.npmjs.com/package/commit-conventional)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://www.conventionalcommits.org/)
 [![License](https://img.shields.io/npm/l/commit-conventional.svg)](https://github.com/codingashishdev/conventional-committer/blob/main/LICENSE)
 
-An interactive CLI for creating [Conventional Commits](https://www.conventionalcommits.org/) with Git.
+A professional, interactive CLI that helps teams create clean, consistent [Conventional Commits](https://www.conventionalcommits.org/) directly from the terminal.
+
+---
+
+## Project Overview
+
+**Commit Conventional** streamlines commit creation by guiding developers through a structured prompt flow and validating each part of the message before committing.
+
+It is designed for reliability, clarity, and day-to-day developer productivity in real Git workflows.
+
+## Key Highlights
+
+- Interactive terminal-first commit workflow
+- Enforces Conventional Commit structure and standards
+- Built-in validation for type, scope, subject, body, and breaking changes
+- Safe by design: never stages files automatically
+- Supports preview mode before creating a commit
+
+## Why This Project Matters
+
+Consistent commit history improves:
+
+- Team collaboration and code review quality
+- Changelog generation and release automation
+- Long-term repository maintainability
+
+This tool reduces ambiguity and helps teams adopt a disciplined commit culture with minimal friction.
 
 ## Requirements
 
-- Node.js 18 or newer
+- Node.js 18+
 - Git
-- An interactive terminal
+- Interactive terminal session
 
 ## Installation
 
-Run it without installing globally:
+Use directly without global install:
 
 ```sh
 npx commit-conventional
 ```
 
-Or install it in a project or globally:
+Or install locally / globally:
 
 ```sh
 npm install --save-dev commit-conventional
@@ -29,18 +55,23 @@ npm install --global commit-conventional
 
 ## Usage
 
-Stage changes, then start the prompt:
+1. Stage your changes:
 
 ```sh
 git add .
+```
+
+2. Run the CLI:
+
+```sh
 npx commit-conventional
 ```
 
-The CLI checks that it is running in a Git repository, validates the commit type, scope, subject, body, and breaking-change description, then displays the complete message before asking for confirmation.
+3. Review and confirm the generated message.
 
-It never stages files automatically. Review the staged index with `git diff --cached` before confirming a commit.
+> Tip: run `git diff --cached` before confirming to verify exactly what is staged.
 
-### Options
+### CLI Options
 
 ```text
 -h, --help       Show help.
@@ -49,13 +80,11 @@ It never stages files automatically. Review the staged index with `git diff --ca
 -n, --no-verify  Bypass Git hooks for this commit.
 ```
 
-`--dry-run` is useful for reviewing the generated message. Git hooks run by default; use `--no-verify` only when intentionally bypassing them.
+- `--dry-run` previews the commit message without creating a commit.
+- Git hooks run by default.
+- Use `--no-verify` only when intentionally bypassing hooks.
 
-The command must run from an interactive terminal. Use `--help` or `--version` in scripts and CI; commit creation is intentionally interactive.
-
-## Commit format
-
-The generated message follows this shape:
+## Commit Format
 
 ```text
 <type>(<optional scope>)<optional !>: <subject>
@@ -65,23 +94,11 @@ The generated message follows this shape:
 <optional BREAKING CHANGE footer>
 ```
 
-Supported types are `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, and `test`.
+Supported commit types:
 
-- `build` — changes to the build system or dependencies
-- `chore` — maintenance work that does not change application behavior
-- `ci` — continuous-integration configuration
-- `docs` — documentation-only changes
-- `feat` — a new feature
-- `fix` — a bug fix
-- `perf` — a performance improvement
-- `refactor` — code restructuring without behavior changes
-- `revert` — reverting an earlier commit
-- `style` — formatting or style-only changes
-- `test` — adding or updating tests
+`build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, `test`
 
 ## Programmatic API
-
-The package entry point also exposes the message builder for integrations:
 
 ```js
 const { buildCommitMessage } = require("commit-conventional");
@@ -101,26 +118,7 @@ npm test
 npm pack --dry-run
 ```
 
-`npm test` performs a strict TypeScript build and runs the Node.js test suite. The `prepack` lifecycle builds the CLI before npm creates a tarball, while `prepublishOnly` runs the full test gate. The package publishes only the compiled CLI, declarations, source map, README, and license.
-
-## Publishing
-
-The package name is unscoped and already belongs to an npm account. To publish a new version, authenticate as the package owner or as a collaborator with publish access:
-
-```sh
-npm login --registry=https://registry.npmjs.org/
-npm whoami
-npm publish --access public
-```
-
-If `npm publish` returns `E404` for the registry `PUT` request, npm is usually hiding an authentication or permission failure. Confirm that `npm whoami` is the expected account and ask the current owner to grant access before retrying:
-
-```sh
-npm owner ls commit-conventional
-npm owner add YOUR_NPM_USERNAME commit-conventional
-```
-
-Do not publish credentials or auth tokens in the repository. The local tarball can be inspected safely with `npm pack --dry-run` before publishing.
+`npm test` runs a strict TypeScript build and the Node.js test suite.
 
 ## License
 
